@@ -48,18 +48,18 @@ export async function getOrders(req, res) {
                     name: props.clientName,
                     address: props.address,
                     phone: props.phone,
-                  },
-                  cake: {
+                },
+                cake: {
                     id: props.cakeId,
                     name: props.cakes,
                     price: props.price,
                     description: props.description,
                     image: props.image,
-                  },
-                  orderId: props.ordersId,
-                  createdAt: props.createdAt,
-                  quantity: props.quantity,
-                  totalPrice: props.totalPrice,
+                },
+                orderId: props.ordersId,
+                createdAt: props.createdAt,
+                quantity: props.quantity,
+                totalPrice: props.totalPrice,
 
             }
 
@@ -76,5 +76,37 @@ export async function getOrders(req, res) {
         return res.sendStatus(500);
 
     }
+
+}
+
+export async function getOrdersById(req, res) {
+
+    const cake = res.locals.cake;
+    const client = res.locals.client;
+    const order = res.locals.order;
+
+    const orderObj = {
+
+        client: {
+            id: client.id,
+            name: client.name,
+            address: client.address,
+            phone: client.phone,
+        },
+        cake: {
+            id: cake.id,
+            name: cake.name,
+            price: cake.price,
+            description: cake.description,
+            image: cake.image,
+        },
+        orderId: order.id,
+        createdAt: order.createdAt,
+        quantity: order.quantity,
+        totalPrice: order.totalPrice,
+
+    }
+
+    res.send(orderObj).status(200);
 
 }

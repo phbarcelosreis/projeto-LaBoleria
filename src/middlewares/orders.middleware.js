@@ -43,3 +43,50 @@ export async function orderCheck(req, res, next) {
     }
    
 }
+
+export async function getOrdersByIdCheck(req, res, next){
+
+    const { id } = req.params;
+
+    const orderById = await connection.query(
+
+        `
+        SELECT * FROM orders WHERE id = $1
+        `,
+        [id]
+
+    )
+
+    if (orderById.rowCount === 0){
+        return res.sendStatus(404);
+    }
+
+    const cakeById = await connection.query(
+
+        `
+        SELECT * FROM cakes WHERE id = $1
+        `,
+        [orderById.rows[0].cakeId]
+
+    )
+
+    const clientById = await connection.query(
+
+        `
+        SELECT * FROM clients WHERE id = $1
+        `,
+        [orderById.rows[0].clientId]
+
+    )
+
+    const cake  = cakeById.rows[0]
+    const client = clientById.rows[0]
+    const order = orderById.rows[0]
+
+    res.locals.cake = cake
+    res.locals.client = client
+    res.locals.order = order
+
+    next()
+
+}

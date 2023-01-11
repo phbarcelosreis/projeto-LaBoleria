@@ -19,7 +19,7 @@ export async function cakesCheck(req, res, next) {
         });
     }
 
-    if (name.length < 2 || price < 0 || typeof price != "number" || typeof description != "string") {
+    if (price < 0) {
         return res.sendStatus(400);
     }
 
@@ -30,6 +30,7 @@ export async function cakesCheck(req, res, next) {
     `,
         [name]
     );
+    
     if (result.rowCount > 0) {
         return res.sendStatus(409);
     }
