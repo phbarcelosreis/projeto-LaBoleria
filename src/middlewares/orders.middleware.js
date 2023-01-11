@@ -18,33 +18,25 @@ export async function orderCheck(req, res, next) {
         });
     }
 
+    const existClientId = await connection.query(
+        'SELECT * FROM clients WHERE id = $1', [clientId]
+    );
 
-    try {
+    const existCakeId = await connection.query(
+        'SELECT * FROM cakes WHERE id = $1', [cakeId]
+    );
 
-        const existClientId = await connection.query(
-            'SELECT * FROM clients WHERE id = $1', [clientId]
-        );
-
-        const existCakeId = await connection.query(
-            'SELECT * FROM cakes WHERE id = $1', [cakeId]
-        );
-
-        if (existCakeId.rowCount === 0 || existClientId.rowCount === 0) {
-            return res.sendStatus(404);
-        }
-
-        next();
-
-    } catch(err){
-
-        console.log(err);
-        return res.sendStatus(500);
-
+    if (existCakeId.rowCount === 0 || existClientId.rowCount === 0) {
+        return res.sendStatus(404);
     }
-   
+
+    console.log(existCakeId)
+
+    next();
+
 }
 
-export async function getOrdersByIdCheck(req, res, next){
+export async function getOrdersByIdCheck(req, res, next) {
 
     const { id } = req.params;
 
@@ -57,7 +49,7 @@ export async function getOrdersByIdCheck(req, res, next){
 
     )
 
-    if (orderById.rowCount === 0){
+    if (orderById.rowCount === 0) {
         return res.sendStatus(404);
     }
 
@@ -79,7 +71,7 @@ export async function getOrdersByIdCheck(req, res, next){
 
     )
 
-    const cake  = cakeById.rows[0]
+    const cake = cakeById.rows[0]
     const client = clientById.rows[0]
     const order = orderById.rows[0]
 
