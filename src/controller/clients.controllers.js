@@ -23,3 +23,19 @@ export async function postClients(req, res) {
 
     }
 }
+
+export async function getClientOrders(req, res){
+
+    const { id } = req.params
+
+    const orders = await connection.query(
+        `
+        SELECT * FROM orders WHERE "clientId" = $1
+        `,
+        [ id ]
+
+    )
+
+    res.send(orders.rows)
+
+}
