@@ -2,19 +2,73 @@ import connection from "../database/db.js";
 
 export async function ordersPost(req, res) {
 
-    const { cakeId, quantity } = req.body;
+    const { clientId, cakeId, quantity, totalPrice } = req.body;
 
     try {
 
-        const price = await connection.query(
-            `SELECT * FROM cakes WHERE id = $1`, [cakeId]
+        await connection.query(
+            `
+            INSERT INTO
+            orders ("clientId", "cakeId", "quantity", "totalPrice")
+            VALUES ($1, $2, $3, $4)
+            `,
+            [clientId, cakeId, quantity, totalPrice]
+        );
+
+        return res.sendStatus(201)
+
+    } catch (error) {
+
+        console.log(error);
+        return res.sendStatus(500);
+
+    }
+
+}
+
+export async function getOrders(req, res) {
+
+    try {
+
+        const allOrders = await connection.query(
+            `SELECT orders.id AS "ordersId", orders."createdAt", orders.quantity, orders."totalPrice",
+            cakes.id AS "cakeId", cakes.name AS "cakes", cakes.price, cakes.description, cakes.image,
+            clients.id AS "clientId", clients.name AS "clientName", clients.address, clients.phone 
+            FROM orders
+            JOIN clients ON "clientId" = clients.id
+            JOIN cakes ON "cakeId" = cakes.id`
+
         )
 
-        const newPrice = price.rows[0].price * quantity
+        const orders = allOrders.rows.map((props) => {
+            const orderObj = {
 
-        console.log(newPrice)
-    
-        return res.sendStatus(200)
+                client: {
+                    id: props.clientId,
+                    name: props.clientName,
+                    address: props.address,
+                    phone: props.phone,
+                  },
+                  cake: {
+                    id: props.cakeId,
+                    name: props.cakes,
+                    price: props.price,
+                    description: props.description,
+                    image: props.image,
+                  },
+                  orderId: props.ordersId,
+                  createdAt: props.createdAt,
+                  quantity: props.quantity,
+                  totalPrice: props.totalPrice,
+
+            }
+
+            return orderObj;
+
+        });
+
+        res.send(orders)
+
 
     } catch (error) {
 

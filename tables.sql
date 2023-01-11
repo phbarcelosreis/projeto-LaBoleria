@@ -24,3 +24,6 @@ CREATE TABLE "orders" (
 
 ALTER TABLE cakes
 ALTER COLUMN price TYPE DOUBLE PRECISION USING price::double precision;
+
+ALTER TABLE orders
+ALTER COLUMN totalPrice TYPE DOUBLE PRECISION USING totalPrice::double precision;
